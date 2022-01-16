@@ -53,12 +53,12 @@
   </servlet-mapping>
   
   <servlet>
-    <servlet-name>user_page</servlet-name>
+    <servlet-name>user_gui</servlet-name>
     <servlet-class>servlets.UserGui</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>user_page</servlet-name>
+    <servlet-name>user_gui</servlet-name>
     <url-pattern>/defaultWebpageUser</url-pattern>
   </servlet-mapping>
   <servlet>

@@ -2,7 +2,7 @@
 
 <b>Welcome to our little demonstration on the MR Webapp</b><br><br>
 
-<form method="POST" action="user_page?action=registerUser">
+<form method="POST" action="defaultWebpageUser?action=registerUser">
 	<fieldset id="browseAvailableOffers">
 		<legend>Required Information</legend>
 		<div>
