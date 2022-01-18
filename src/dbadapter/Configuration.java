@@ -18,8 +18,8 @@ public class Configuration {
 	// Replace these static values with your testing database configuation.
 	private static final String SERVER = "localhost";
 	private static final String TYPE = "mysql";
-	private static final int PORT = 8080;
-	private static final String DATABASE = "vacationrental";
+	private static final int PORT = 3306;
+	private static final String DATABASE = "movieratingappdb";
 	private static final String USER = "root";
 	
 	/**

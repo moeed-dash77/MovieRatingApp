@@ -1,7 +1,7 @@
 <#include "header.ftl">
 
-<div class="success">${message}</div>
+<div class="success">${userMessage}</div>
 <br>
-<h2><a href="/templates/MRA_Templates/MOWebpage.ftl">Home Page</a></h2>
+<h2><a href="MOWebpage?username=${username}">User Webpage</a></h2>
 
 <#include "footer.ftl">

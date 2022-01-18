@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--?xml version="1.0" encoding="UTF-8"?-->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>Movie Rating App</display-name>
+  <display-name>MovieRatingApp</display-name>
   <welcome-file-list>
     <welcome-file>index</welcome-file>
   </welcome-file-list>
@@ -53,14 +53,25 @@
   </servlet-mapping>
   
   <servlet>
-    <servlet-name>user_gui</servlet-name>
+    <servlet-name>reguser_gui</servlet-name>
     <servlet-class>servlets.UserGui</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>user_gui</servlet-name>
+    <servlet-name>reguser_gui</servlet-name>
+    <url-pattern>/MOWebpage</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>unreg_gui</servlet-name>
+    <servlet-class>servlets.UnregisteredUserGui</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>unreg_gui</servlet-name>
     <url-pattern>/defaultWebpageUser</url-pattern>
   </servlet-mapping>
+  
   <servlet>
 	<servlet-name>error_page</servlet-name>
 	<servlet-class>servlets.Error404Servlet</servlet-class> 

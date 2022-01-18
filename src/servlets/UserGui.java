@@ -27,31 +27,30 @@ public class UserGui extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		
 		// Set navtype
-		request.setAttribute("navtype", "general");
+		request.setAttribute("navtype", "user");
 
 		// Catch error if there is no page contained in the request
 		String action = (request.getParameter("action") == null) ? "" : request.getParameter("action");
-		
-		// Case: Request Registering form
-				if (action.equals("selectRegisterForm")) {
-					// Set request attributes
-					request.setAttribute("pagetitle", "Register");
-					// Dispatch request to template engine
-					try {
-						request.getRequestDispatcher("/templates/defaultWebpageUser.ftl").forward(request, response);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}else if(action.equals("selectAddMovieForm")){
+			
+			if(action.equals("")) {
+				try {
+					request.setAttribute("pagetitle", "User Home Page");
+					request.setAttribute("username", request.getParameter("username"));
+					request.getRequestDispatcher("/templates/MOWebpage.ftl").forward(request, response);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+			 else if(action.equals("selectAddMovieForm")){
 
 					// Set request attributes
 					request.setAttribute("pagetitle", "AddNewMovie");
 					request.setAttribute("username", request.getParameter("username"));
 
-
 					// Dispatch request to template engine
 					try {
-						request.getRequestDispatcher("/templates/showNewMovieFrom.ftl").forward(request, response);
+						request.getRequestDispatcher("/templates/showNewMovieForm.ftl").forward(request, response);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -60,6 +59,7 @@ public class UserGui extends HttpServlet {
 					// Set request attributes
 					request.setAttribute("pagetitle", "RateMovies");
 					request.setAttribute("username", request.getParameter("username"));
+					request.setAttribute("movietitle", request.getParameter("movieTitle"));
 
 					// Dispatch request to template engine
 					try {
@@ -70,6 +70,7 @@ public class UserGui extends HttpServlet {
 					// Generate and show results of a search
 				}else if (request.getParameter("action").equals("showAllMoviesInDB")) {
 					request.setAttribute("pagetitle", "Movies In Database");
+					request.setAttribute("username", request.getParameter("username"));
 					List<Movies> allMovies = null;
 
 					// Call application to request the results
@@ -78,6 +79,7 @@ public class UserGui extends HttpServlet {
 
 						// Dispatch results to template engine
 						request.setAttribute("moviesList", allMovies);
+						request.setAttribute("pagetitle", "Movie List");
 						request.getRequestDispatcher("/templates/moviesRepresentation.ftl").forward(request, response);
 						
 					}catch (Exception e1) {
@@ -102,32 +104,30 @@ public class UserGui extends HttpServlet {
 	 */
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-		// Set attribute for navigation type.
+		 //Set attribute for navigation type.
 				request.setAttribute("navtype", "user");
-				
-				
                 if (request.getParameter("action").equals("addNewMovie")) {
 					
 					// Decide whether creating data was successful or not
-					if (MRApplication.getInstance().addMovieToDB(request.getParameter("username"),
+                	boolean movieConfirmation = MRApplication.getInstance().addMovieToDB(request.getParameter("username"),
 							request.getParameter("title"), request.getParameter("director"),
-							request.getParameter("mainActor"), request.getParameter("publishingDate")) != null) {
+							request.getParameter("mainActor"), request.getParameter("publishingDate"));
+					if (movieConfirmation) {
 						
 						// Set request attributes
-						request.setAttribute("pagetitle", "Added Successful");
-						request.setAttribute("message",
-								"New Movie successfully created.");
-						
+						request.setAttribute("pagetitle", "Movie Added Success");
+						request.setAttribute("message","New Movie successfully created.");
+						request.setAttribute("username", request.getParameter("username"));
 						// Dispatch to template engine
 						try {
-							request.getRequestDispatcher("/templates/MRA_Templates/successCreateMovie.ftl").forward(request, response);
+							request.getRequestDispatcher("/templates/successCreateMovie.ftl").forward(request, response);
 						} catch (ServletException | IOException e) {
 							e.printStackTrace();
 						}
 					}else {
-						request.setAttribute("pagetitle", "Adding failed");
-						request.setAttribute("message",
-								"Movie not added, failed.");
+						request.setAttribute("pagetitle", "Movie Added Failed");
+						request.setAttribute("message","Movie not added, failed.");
+						request.setAttribute("username", request.getParameter("username"));
 
 						try {
 							request.getRequestDispatcher("/templates/failCreateMovie.ftl").forward(request,
@@ -138,65 +138,27 @@ public class UserGui extends HttpServlet {
 
 					}
 					//creating user 
-				}else if (request.getParameter("action").equals("registerUser")) {
-					
-					
-					// Decide whether creating data was successful or not
-					if (MRApplication.getInstance().create(request.getParameter("username"),
-							request.getParameter("email"), request.getParameter("password"),
-							request.getParameter("age")) != null) {
-						
-						// Set request attributes
-						request.setAttribute("pagetitle", "Registered Successfully");
-						request.setAttribute("message",
-								"Account created Successfully!!");
-						
-						// Dispatch to template engine
-						try {
-							request.getRequestDispatcher("/templates/MRA_Templates/OkRegister.ftl").forward(request, response);
-						} catch (ServletException | IOException e) {
-							e.printStackTrace();
-						}
-					}else {
-						request.setAttribute("pagetitle", "Adding failed");
-						request.setAttribute("message",
-								"Registeration failed.");
-
-						try {
-							request.getRequestDispatcher("/templates/MRA_Templates/failRegister.ftl").forward(request,
-									response);
-						} catch (ServletException | IOException e) {
-							e.printStackTrace();
-						}
-
-					}
-					//Adding Rating to DB 
 				}else if (request.getParameter("action").equals("rateMovie")) {
-					
-					
 					// Decide whether creating data was successful or not
-					if (MRApplication.getInstance().createRating(request.getParameter("username"),
-							request.getParameter("rating"), request.getParameter("title"),
-							request.getParameter("comment")) != null) {
-						
+					boolean RatingStatus = MRApplication.getInstance().createRating(request.getParameter("username"),
+							request.getParameter("rating"), request.getParameter("movieTitle"),
+							request.getParameter("comment"));
+					request.setAttribute("username", request.getParameter("username"));
+					if (RatingStatus) {
 						// Set request attributes
 						request.setAttribute("pagetitle", "Rated Successfully");
-						request.setAttribute("message",
-								"Movie Rated Successfully!!");
-						
+						request.setAttribute("message","Movie Rated Successfully!!");
 						// Dispatch to template engine
 						try {
-							request.getRequestDispatcher("/templates/MRA_Templates/successRateMovie.ftl").forward(request, response);
+							request.getRequestDispatcher("/templates/successRateMovie.ftl").forward(request, response);
 						} catch (ServletException | IOException e) {
 							e.printStackTrace();
 						}
 					}else {
 						request.setAttribute("pagetitle", "Failed Rating");
-						request.setAttribute("message",
-								"Failed to Rate");
-
+						request.setAttribute("message","Failed to Rate");
 						try {
-							request.getRequestDispatcher("/templates/MRA_Templates/failRateMovie.ftl").forward(request,
+							request.getRequestDispatcher("/templates/failRateMovie.ftl").forward(request,
 									response);
 						} catch (ServletException | IOException e) {
 							e.printStackTrace();

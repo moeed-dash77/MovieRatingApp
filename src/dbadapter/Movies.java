@@ -17,13 +17,13 @@ import java.util.Date;
 
 public class Movies {
 	
-	private String username;
+	//private String username;
 	private String title;
 	private String director;
 	private String mainActor;
 	private Date publishingDate;
-	private int rating;
-	private String comment;
+	//private int rating;
+	//private String comment;
 	private int avgRating;
 	public int getAvgRating() {
 		return avgRating;
@@ -37,7 +37,7 @@ public class Movies {
 	public Movies() {}
 	
 	public Movies(String username, String title, String director, String mainActor,  Date publishingDate) {
-		this.username = username;
+		//this.username = username;
 		this.title = title;
 		this.director = director;
 		this.mainActor = mainActor;
@@ -47,10 +47,10 @@ public class Movies {
 	
 	
 	public Movies(String username,int rating, String title,  String comment) {
-		this.username = username;
-		this.rating = rating;
+		//this.username = username;
+		//this.rating = rating;
 		this.title = title;
-		this.comment = comment;
+		//this.comment = comment;
 		this.movies = new ArrayList<Movies>();
 	}
 	
@@ -59,18 +59,18 @@ public class Movies {
 			
 	@Override
 	public String toString() {
-		return "Movies [username=" + username + ", title=" + title + ", director=" + director + ", mainActor="
-				+ mainActor + ", publishingDate=" + publishingDate + ", rating=" + rating + ", comment=" + comment
+		return "Movies [title=" + title + ", director=" + director + ", mainActor="
+				+ mainActor + ", publishingDate=" + publishingDate + ", rating=" + avgRating 
 				+ ", movies=" + movies + "]";
 	}
 
 
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
+//	public String getUsername() {
+//		return username;
+//	}
+//	public void setUsername(String username) {
+//		this.username = username;
+//	}
 	public String getTitle() {
 		return title;
 	}
@@ -95,18 +95,18 @@ public class Movies {
 	public void setPublishingDate(Date publishingDate) {
 		this.publishingDate = publishingDate;
 	}
-	public int getRating() {
-		return rating;
-	}
-	public void setRating(int rating) {
-		this.rating = rating;
-	}
-	public String getComment() {
-		return comment;
-	}
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+//	public int getRating() {
+//		return rating;
+//	}
+//	public void setRating(int rating) {
+//		this.rating = rating;
+//	}
+//	public String getComment() {
+//		return comment;
+//	}
+//	public void setComment(String comment) {
+//		this.comment = comment;
+//	}
 	public ArrayList<Movies> getMovies() {
 		return movies;
 	}

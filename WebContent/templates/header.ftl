@@ -30,10 +30,9 @@
     <ul id="navigation">
     	<li><a href="index" title="Index">View Homesite</a></li>
     <#if navtype == "user">
-		<li><a href="user_gui" title="UserPage">User Page</a></li>
+		<li><a href="MOWebpage?action=" title="UserPage">User Page</a></li>
 	<#else>
 		<li><a href="defaultWebpageUser?action=selectRegisterForm" title="Register">Register</a></li>
-    	<li><a href="user_gui" title="UserPage">User Page</a></li>
 	</#if>
     </ul>
 	<div id="content">

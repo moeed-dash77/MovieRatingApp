@@ -46,24 +46,25 @@ public class MRApplication implements UserCmds{
 	 * @return
 	 */
 	
-	public UserAccount create(String username, String email, String password, String age) {
+	public boolean create(String username, String email, String password, String age) {
         
-		 assert (!checkUserAlreadyExists(email)) : "User already exists, Precondition not satisfied";
+		 assert (!checkUserAlreadyExists(username)) : "User already exists, Precondition not satisfied";
 
 			// Create result object
-			UserAccount failRegisteration = null;
+			boolean registeredStatus = false;
 
 		// Parse inputs to correct datatypes
 		try {
 			
 			int ageSQL = Integer.parseInt(age);
-			failRegisteration = DBFacade.getInstance().createUser( username,  email, password,  ageSQL);
-			
+			if(username != null && ageSQL >= 17 && email != null && password != null) {
+				registeredStatus = DBFacade.getInstance().createUser(username, email, password, ageSQL);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return failRegisteration;
+		return registeredStatus;
 	}
 	
 	
@@ -78,14 +79,14 @@ public class MRApplication implements UserCmds{
 	 * @return
 	 */
 	
-	public Movies addMovieToDB(String username, String title, String director, String mainActor, String publishingDate) {
+	public boolean addMovieToDB(String username, String title, String director, String mainActor, String publishingDate) {
 		
 		
 		// pre: check if the movie being added already exists in the database or not
 		assert (!movieAlreadyExists(title)) : "Precondition not satisfied";
 		
 		// Create result object
-		Movies okfail = null;
+		boolean movieConfirmation = false;
 
 		// Parse inputs to correct datatypes
 		try {
@@ -93,12 +94,12 @@ public class MRApplication implements UserCmds{
 			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			Date publishingDateSQL = dateFormat.parse(publishingDate);
 
-			okfail = DBFacade.getInstance().addingNewMoviesToDB(username, title, director, mainActor, publishingDateSQL);
+			movieConfirmation = DBFacade.getInstance().addingNewMoviesToDB(title, director, mainActor, publishingDateSQL);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return okfail;
+		return movieConfirmation;
 	}
 	
 	/**
@@ -112,25 +113,29 @@ public class MRApplication implements UserCmds{
 	 * @return
 	 */
 	
-     public Movies createRating(String username, String rating, String title, String comment) {
+     public boolean createRating(String username, String rating, String title, String comment) {
 		
 		
 		// pre: check if the movie being added is already rated by the user 
-		assert (!movieAlreadyRated(username)) : "Precondition not satisfied";
+		assert (!movieAlreadyRated(username,title)) : "Precondition not satisfied";
 		
 		// Create result object
-		Movies okfail = null;
+		boolean RatingOk = false;
 
 		// Parse inputs to correct datatypes
 		try {
 			
 			int ratingSQL = Integer.parseInt(rating);
-			okfail = DBFacade.getInstance().addingNewRatingToDB(username, ratingSQL,  title,  comment);
+			if(ratingSQL != 0 &&  ratingSQL > 0 && ratingSQL < 11 ) {
+				RatingOk = DBFacade.getInstance().addingNewRatingToDB(username, ratingSQL, title, comment);
+			}else {
+				RatingOk = false;
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return okfail;
+		return RatingOk;
 	}
      
      /**
@@ -150,31 +155,23 @@ public class MRApplication implements UserCmds{
 	public ArrayList<Movies> getMoviesInDB() {
 		
 		ArrayList<Movies> result = null;
-
-		
 		try {
-			
 			result = DBFacade.getInstance().getMoviesInDB();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return result;
 	}
-
-	
-	
 	private boolean movieAlreadyExists(String title) {
 		return DBFacade.getInstance().checkMovieAlreadyExists(title);
 	}
 	
-	private boolean movieAlreadyRated(String username) {
-		return DBFacade.getInstance().checkMovieAlreadyRated(username);
+	private boolean movieAlreadyRated(String username,String movieTitle) {
+		return DBFacade.getInstance().checkMovieAlreadyRated(username,movieTitle);
 	}
 	
-	private boolean checkUserAlreadyExists(String email) {
-		return DBFacade.getInstance().checkUserAlreadyExists(email);
+	private boolean checkUserAlreadyExists(String username) {
+		return DBFacade.getInstance().checkUserAlreadyExists(username);
 	}
 	
 	

@@ -19,15 +19,15 @@ public interface IMovie {
 
 	public ArrayList<Movies> getMoviesInDB();
 	
-	public Movies addingNewMoviesToDB(String username, String title, String director, String mainActor, Date publishingDate);
+	public boolean addingNewMoviesToDB(String title, String director, String mainActor, Date publishingDate);
 	
-	public Movies addingNewRatingToDB(String username, int rating, String title, String comment);
+	public boolean addingNewRatingToDB(String username, int rating, String title, String comment);
     
 	public boolean checkMovieAlreadyExists(String title);
 	
 	public void setNotRated(String username, String title);
 	
-	public boolean checkMovieAlreadyRated(String username);
+	public boolean checkMovieAlreadyRated(String username,String title);
 
 
 }

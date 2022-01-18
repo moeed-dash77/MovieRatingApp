@@ -53,26 +53,22 @@ public class DBFacade implements IMovie, IUserAcc {
 
 		return instance;
 	}
-
+	
 	public static void setInstance(DBFacade dbfacade) {
 		instance = dbfacade;
 	}
-
+	
 	/**
 	 * Function that returns all Movies from the database..
 	 * @return Arraylist of all Movie objects.
 	 */
 	
 	public ArrayList<Movies> getMoviesInDB() {
-		
-	
 		ArrayList<Movies> movies = new ArrayList<Movies>();
 
 		// Declare the necessary SQL queries.
 		
-		String sqlSelect = "SELECT title, publishingDate, director, mainActor, DECIMAL(AVG(rating),5,2) as Avg_Rating, comment  "
-				+ "FROM Movie GROUP BY title ORDER BY Avg_rating";
-
+		String sqlSelect = "SELECT mov.*,rat.AverageRating from movieratingappdb.movies mov LEFT JOIN (SELECT m.title, avg(r.rating) as AverageRating FROM movieratingappdb.movies m JOIN movieratingappdb.ratings r on r.mid = m.title GROUP BY m.title) rat ON rat.title = mov.title ORDER BY AverageRating DESC";
 
 		// Query all movies
 		try (Connection connection = DriverManager
@@ -87,8 +83,9 @@ public class DBFacade implements IMovie, IUserAcc {
 					movie.setTitle(rs.getString("title"));
 					movie.setPublishingDate(rs.getDate("publishingDate"));
 					movie.setMainActor(rs.getString("mainActor"));
-					movie.setAvgRating(rs.getInt("Avg_Rating"));
-					movie.setComment(rs.getString("Comment"));
+					movie.setDirector(rs.getString("director"));
+					movie.setAvgRating(rs.getInt("AverageRating"));
+					//movie.setComment(rs.getString("Comment"));
 					movies.add(movie);
 					movie.setMovies(movies);
 				} 
@@ -99,8 +96,9 @@ public class DBFacade implements IMovie, IUserAcc {
 			}
 
 	}catch(Exception e) {
-		System.out.println("SQL Database connection to showMovies failed" + e.getMessage());	}
-		return movies;
+		System.out.println("SQL Database connection to showMovies failed" + e.getMessage());	
+	}
+	return movies;
 }
 	
 /*	public ArrayList<HolidayOffer> getAvailableHolidayOffers(Timestamp arrivalTime, Timestamp departureTime,
@@ -157,6 +155,32 @@ public class DBFacade implements IMovie, IUserAcc {
 		return result;
 	}*/
 
+	public int selectUserId(String username) {
+
+		// Declare necessary SQL query.
+		String queryUserID = "SELECT * FROM useraccount WHERE username=?";
+		int userId = 0;
+		// query data.
+		try (Connection connection = DriverManager
+				.getConnection(
+						"jdbc:" + Configuration.getType() + "://" + Configuration.getServer() + ":"
+								+ Configuration.getPort() + "/" + Configuration.getDatabase(),
+						Configuration.getUser(), Configuration.getPassword())) {
+			try (PreparedStatement psSelect = connection.prepareStatement(queryUserID)) {
+				psSelect.setString(1, username);
+				try (ResultSet rs = psSelect.executeQuery()) {
+					while(rs.next()) {
+						userId = rs.getInt("id");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return userId;
+		}
+		return userId;
+	}
+
 	/**
 	 * Inserts a new Movie in the database.
 	 * 
@@ -167,17 +191,12 @@ public class DBFacade implements IMovie, IUserAcc {
 	 * @return 
 	 */
 	
-	public Movies addingNewMoviesToDB(String username, String title, String director, String mainActor, Date publishingDate) {
+	public boolean addingNewMoviesToDB(String title, String director, String mainActor, Date publishingDate) {
 
+		boolean movieAdded = false;
 		// Declare SQL query to insert Movie.
-		String sqlInsert = "INSERT INTO Moive (username, title, director, mainActor, publishingDate) VALUES (?,?,?,?,?)";
-        
-		//return type movie object
-		
-		Movies movie = new Movies(username, title, director, mainActor, publishingDate);
-		
+		String sqlInsert = "INSERT INTO movieratingappdb.movies (title, director, mainActor, publishingDate) VALUES (?,?,?,?)";
 		// Insert Movie into database.
-		
 		try (Connection connection = DriverManager
 				.getConnection(
 						"jdbc:" + Configuration.getType() + "://" + Configuration.getServer() + ":"
@@ -185,31 +204,32 @@ public class DBFacade implements IMovie, IUserAcc {
 						Configuration.getUser(), Configuration.getPassword())) {
 
 			try (PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
-			
-				//Timestamp creationDate = new Timestamp(new Date().getTime());
-				
 				Date now = new Date();
 				int checkDate = now.compareTo(publishingDate);
 				
 				if(title!= null && director!= null && mainActor!= null && !(checkDate < 0)) {
-
-					
-				    ps.setString(1, movie.getUsername());
-				    ps.setString(2, movie.getTitle());
-			    	ps.setString(3, movie.getDirector());
-				    ps.setString(4, movie.getMainActor());
-				    ps.setDate(5, (java.sql.Date) movie.getPublishingDate());
-				    ps.executeUpdate();
+				    ps.setString(1, title);
+			    	ps.setString(2, director);
+				    ps.setString(3, mainActor);
+				    ps.setDate(4, new java.sql.Date(publishingDate.getTime()));
+				    int rowCount = ps.executeUpdate();
+				    if (rowCount>0) {
+				    	movieAdded = true;
+				    }else {
+				    	movieAdded = false;
+				    }
 				    
 				}
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
+				movieAdded = false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			movieAdded = false;
 		}
-		return movie;
+		return movieAdded;
 
 	}
 	
@@ -330,6 +350,7 @@ public class DBFacade implements IMovie, IUserAcc {
 //		return booking;
 //	}
 //	
+
 	
 	/**
 	 * Inserts a new Rating in the database.
@@ -341,15 +362,9 @@ public class DBFacade implements IMovie, IUserAcc {
 	 * @return 
 	 */
 	
-	public Movies addingNewRatingToDB(String username, int rating, String title, String comment) {
-
-		// Declare SQL query to insert new rating.
-		
-		String sqlInsert = "INSERT INTO Moive (username, rating,  title,  comment) VALUES (?,?,?,?)";
-
-		Movies movie = new Movies(username, rating,  title,  comment);
-		
-		
+	public boolean addingNewRatingToDB(String username, int rating, String title, String comment) {
+		boolean RatingStatus = false;
+		String sqlInsert = "INSERT INTO movieratingappdb.ratings (uid, rating, mid, comment) VALUES (?,?,?,?)";	
 		// Insert Ratings into database.
 		
 		try (Connection connection = DriverManager
@@ -359,29 +374,24 @@ public class DBFacade implements IMovie, IUserAcc {
 						Configuration.getUser(), Configuration.getPassword())) {
 
 			try (PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
-			
-				
-				if(rating!= 0 &&  rating > 0 && rating < 11 ) {
-
-					
-					
-					ps.setString(1, movie.getUsername());
-				    ps.setInt(2, movie.getRating());
-				    ps.setString(3, movie.getTitle());
-			    	ps.setString(4, movie.getComment());
-				    
-				    
-				    ps.executeUpdate();
-				 
-				}
+				ps.setString(1, username);
+			    ps.setInt(2, rating);
+			    ps.setString(3, title);
+		    	ps.setString(4, comment); 
+			    int rowCount = ps.executeUpdate();
+			    if (rowCount > 0) {
+			    	RatingStatus = true;
+			    }
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
+				RatingStatus = false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			RatingStatus = false;
 		}
-		return movie;
+		return RatingStatus;
 
 	}
 	
@@ -396,16 +406,9 @@ public class DBFacade implements IMovie, IUserAcc {
 	 * @return 
 	 */
 	
-	public UserAccount createUser(String username, String email, String password, int age) {
-
-		// Declare SQL query to insert user.
-		String sqlInsert = "INSERT INTO User (username, email,  password,  age) VALUES (?,?,?,?)";
-
-		
-		UserAccount ua = new UserAccount( username,  email, password,  age);
-		
-		
-		// Insert UserAccont into database.
+	public boolean createUser(String username, String email, String password, int age) {
+		boolean registerStatus = false;
+		String sqlInsert = "INSERT INTO movieratingappdb.userAccount (username, email, password, age) VALUES (?,?,?,?)";
 		try (Connection connection = DriverManager
 				.getConnection(
 						"jdbc:" + Configuration.getType() + "://" + Configuration.getServer() + ":"
@@ -413,29 +416,26 @@ public class DBFacade implements IMovie, IUserAcc {
 						Configuration.getUser(), Configuration.getPassword())) {
 
 			try (PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
-			;
-				
-				if(username!= null && age< 17 && email != null && password != null   ) {
-
-					
-					
-					ps.setString(1, ua.getUsername());
-				    ps.setString(2, ua.getEmail());
-				    ps.setString(3,ua.getPassword());
-			    	ps.setInt(4, ua.getAge());
+					ps.setString(1, username);
+				    ps.setString(2, email);
+				    ps.setString(3, password);
+			    	ps.setInt(4, age);
+				    int rowCount = ps.executeUpdate();
+				    if (rowCount > 0) {
+				    	registerStatus = true;
+				    }else {
+				    	registerStatus = false;
+				    }
 				    
-				    
-				    ps.executeUpdate();
-				  
-				}
-				
-			} catch (SQLException e) {
+				}catch (SQLException e) {
 				e.printStackTrace();
+				registerStatus = false;
 			}
-		} catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
+			registerStatus = false;
 		}
-		return ua;
+		return registerStatus;
 
 	}
 	
@@ -502,7 +502,7 @@ public class DBFacade implements IMovie, IUserAcc {
 	public boolean checkMovieAlreadyExists(String title) {
 
 		// Declare necessary SQL query.
-		String queryME = "SELECT FROM Movie WHERE title=?";
+		String queryME = "SELECT * FROM movieratingappdb.movies WHERE title=?";
 
 		// query data.
 		try (Connection connection = DriverManager
@@ -529,10 +529,10 @@ public class DBFacade implements IMovie, IUserAcc {
 	 * @return
 	 */
 	
-	public boolean checkUserAlreadyExists(String email) {
+	public boolean checkUserAlreadyExists(String username) {
 
 		// Declare necessary SQL query.
-		String queryUE = "SELECT FROM User WHERE email=?";
+		String queryUE = "SELECT * FROM movieratingappdb.useraccount WHERE username=?";
 
 		// query data.
 		try (Connection connection = DriverManager
@@ -541,7 +541,7 @@ public class DBFacade implements IMovie, IUserAcc {
 								+ Configuration.getPort() + "/" + Configuration.getDatabase(),
 						Configuration.getUser(), Configuration.getPassword())) {
 			try (PreparedStatement psSelect = connection.prepareStatement(queryUE)) {
-				psSelect.setString(1, email);
+				psSelect.setString(1, username);
 				try (ResultSet rs = psSelect.executeQuery()) {
 					return rs.next();
 				}
@@ -559,10 +559,10 @@ public class DBFacade implements IMovie, IUserAcc {
 	 * @return
 	 */
 	
-	public boolean checkMovieAlreadyRated(String username) {
+	public boolean checkMovieAlreadyRated(String username, String movieTitle) {
 
 		// Declare necessary SQL query.
-		String queryRE = "SELECT rating FROM Movie WHERE username=?";
+		String queryRE = "SELECT * FROM movieratingappdb.ratings WHERE uid=? and mid =?";
 
 		// query data.
 		try (Connection connection = DriverManager
@@ -572,6 +572,7 @@ public class DBFacade implements IMovie, IUserAcc {
 						Configuration.getUser(), Configuration.getPassword())) {
 			try (PreparedStatement psSelect = connection.prepareStatement(queryRE)) {
 				psSelect.setString(1, username);
+				psSelect.setString(2, movieTitle);
 				try (ResultSet rs = psSelect.executeQuery()) {
 					return rs.next();
 				}
