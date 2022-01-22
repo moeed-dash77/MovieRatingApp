@@ -32,7 +32,10 @@ public class UserGuiTest {
 	
 	@Test
 	public void testUserGuiLifCycle() {
-		
+
+//------------------------------------------------------------------------------------------------------------------------------------
+               //test registering user
+//====================================================================================================================================
 		// Start testing for defaultWebpageUser which contains the register form
 		
 		 tester.beginAt("defaultWebpageUser?action=selectRegisterForm");
@@ -99,7 +102,10 @@ public class UserGuiTest {
 				tester.assertLinkPresent("FailRegister");
 				tester.assertLinkPresentWithText("Try Again!");
 				
-//------------------------------------------------------------------------------------------------------------
+				
+	//-----------------------------------------------------------------------------------------------------------------
+				//create movies Test
+	//---------------------------------------------------------------------------------------------------------------
 				
 				
 				
@@ -128,11 +134,7 @@ public class UserGuiTest {
 	// click on add movie to get the create movie form
 				
 				tester.clickLinkWithExactText("Add Movie");
-				
-				tester.gotoPage("http://localhost:8080/MovieRatingApp/MOWebpage?action=selectAddMovieForm&username=grupestst");
-				
-				
-				
+	
    // Check all components of the create movie form
 				tester.assertTitleEquals("Movie Rating App - AddNewMovie");
 				tester.assertFormPresent();
@@ -146,7 +148,7 @@ public class UserGuiTest {
 				tester.assertTextPresent("Publishing Date");
 				tester.assertFormElementPresent("publishingDate");
 				tester.assertButtonPresentWithText("Submit!");
-				tester.assertButtonPresent("SelectHOWebpage");
+				tester.assertButtonPresent("AddMovieForm");
 				
 				//submitt the form with given parameter
 	//change here			
@@ -155,7 +157,7 @@ public class UserGuiTest {
 				tester.setTextField("mainActor", "nazessser");
 				tester.setTextField("publishingDate", "06/23/2016");
 				
-				tester.clickButton("SelectHOWebpage");
+				tester.clickButton("AddMovieForm");
 				
 				//check if user successfully added movie representation showed
 				tester.assertTitleEquals("Movie Rating App - Movie Added Success");
@@ -169,7 +171,7 @@ public class UserGuiTest {
 				tester.setTextField("mainActor", "nazeer");
 				tester.setTextField("publishingDate", "06/23/2025");
 				
-				tester.clickButton("SelectHOWebpage");
+				tester.clickButton("AddMovieForm");
 				
 				//fail representation
 				tester.assertTitleEquals("Movie Rating App - Movie Added Failed");
@@ -185,13 +187,83 @@ public class UserGuiTest {
 				tester.setTextField("mainActor", "nazeer");
 				tester.setTextField("publishingDate", "06/23/2019");
 				
-				tester.clickButton("SelectHOWebpage");
+				tester.clickButton("AddMovieForm");
 				
 				//fail representation
 				tester.assertTitleEquals("Movie Rating App - Movie Added Failed");
 				tester.assertTextPresent("Movie not added, failed.");
 				
 				
+	//-----------------------------------------------------------------------------------------------------------------
+				//showMovies Test
+	//-----------------------------------------------------------------------------------------------------------------
+				
+				
+			//check the show movies feature from the navigation bar
+				tester.clickLink("ShowMovies");
+				// Check the representation of the table 
+				tester.assertTablePresent("MovieListTable");
+				String[][] tableHeadings = { { "Title", "Publishing Date", "Director", "Main Actor", "Average Rating", "Rate Movies" }, {"jamesfe", "Jun 23, 2016", "ashdfdfak", "nazessser", "0", "Rate This Movie"} };
+				tester.assertTableEquals("MovieListTable", tableHeadings);
+				
+    //-----------------------------------------------------------------------------------------------------------------
+				//rate movies Test
+	//---------------------------------------------------------------------------------------------------------------
+	
+				tester.clickLink("jamesfe");
+				
+			//test the add movie rating form component
+				tester.assertTitleEquals("Movie Rating App - RateMovies");
+				tester.assertFormPresent();
+				tester.assertTextPresent("Required Information");
+				tester.assertTextPresent("Rating");
+				tester.assertFormElementPresent("rating");
+				tester.assertTextPresent("Comment");
+				tester.assertFormElementPresent("comment");
+				tester.assertButtonPresentWithText("Submit!");
+				tester.assertButtonPresent("RateMovie");
+				
+				//submitt the form with given parameter
+	//change here			
+	             tester.setTextField("rating", "9");
+				 tester.setTextField("comment", "goooooooooood");
+				 tester.clickButton("RateMovie");
+				 
+				 
+		
+				//check if user successfully rated representation showed
+				tester.assertTitleEquals("Movie Rating App - Rated Successfully");
+				tester.assertTextPresent("Movie Rated Successfully!!");
+				
+				
+				 
+				tester.clickLink("ShowMovies");			
+				
+			//fail case 1) duplicate rating user tries to rate the same movie again
+				
+				tester.clickLink("jamesfe");
+				
+				 tester.setTextField("rating", "7");
+				 tester.setTextField("comment", "goooooooooood");
+				 tester.clickButton("RateMovie");
+				 
+				 //fail representation
+				tester.assertTitleEquals("Movie Rating App - Failed Rating");
+				tester.assertTextPresent("Failed to Rate");
+				
+			//fail case 2) empty rating field submitted
+				
+				tester.clickLink("ShowMovies");	
+				tester.clickLink("jamesfe");
+				
+				 tester.setTextField("rating", "0");
+				 tester.setTextField("comment", "bnbvbb");
+				 tester.clickButton("RateMovie");
+				 
+				 //fail representation
+				tester.assertTitleEquals("Movie Rating App - Failed Rating");
+				tester.assertTextPresent("Failed to Rate");
+		
 				
 	}
 	

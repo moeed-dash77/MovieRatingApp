@@ -16,7 +16,7 @@
 			<input type="text" name="comment">
 	    </div>
 	</fieldset>
-	<button type="submit" id="SelectHOWebpage" name="MOWebpage" value="Submit">Submit!</button>
+	<button type="submit" id="RateMovie" name="MOWebpage" value="Submit">Submit!</button>
 </form>
 
 <#include "footer.ftl">

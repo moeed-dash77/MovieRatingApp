@@ -25,6 +25,6 @@
 			<input type="text" name="publishingDate" id="datepicker" required>
 	    </div>
 	</fieldset>
-	<button type="submit" id="SelectHOWebpage" name="MOWebpage" value="Submit">Submit!</button>
+	<button type="submit" id="AddMovieForm" name="MOWebpage" value="Submit">Submit!</button>
 </form>
 <#include "footer.ftl">

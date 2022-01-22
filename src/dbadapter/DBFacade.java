@@ -207,6 +207,8 @@ public class DBFacade implements IMovie, IUserAcc {
 						Configuration.getUser(), Configuration.getPassword())) {
 
 			try (PreparedStatement ps = connection.prepareStatement(sqlInsert)) {
+				
+				if(!(checkMovieAlreadyRated(username,  title))){
 				ps.setString(1, username);
 			    ps.setInt(2, rating);
 			    ps.setString(3, title);
@@ -215,7 +217,7 @@ public class DBFacade implements IMovie, IUserAcc {
 			    if (rowCount > 0) {
 			    	RatingStatus = true;
 			    }
-				
+			  }	
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RatingStatus = false;

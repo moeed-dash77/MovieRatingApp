@@ -16,6 +16,7 @@ import dbadapter.Movies;
 import dbadapter.Configuration;
 import dbadapter.DBFacade;
 import dbadapter.UserAccount;
+import dbadapter.Rating;
 import junit.framework.TestCase;
 
 /**
@@ -35,66 +36,76 @@ public class DBFacadeTest extends TestCase {
 	 * Preparing classes with static methods
 	 */
 
-	@Before
-	public void setUp() throws Exception {
+	
 		
-		testM = new Movies("sorasyed", "MusterMovie", "Mustermann", "MusterActor", Date.valueOf("2021-02-28") );
-		testUA = new UserAccount("musrteralfred", "musrteralfred@test.de", "test", 34 );
-		ArrayList<Movies> testMovies = new ArrayList<Movies>();
-		testMovies.add(testM);
-		testM.setMovies(testMovies);
-		
-		
-		// SQL statements
-		String sqlCleanDB = "DROP TABLE IF EXISTS movies,rating,useracount";
-		String sqlCreateTableMovies = "CREATE TABLE movies ( id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11, title varchar(20) NOT NULL, director varchar(20) DEFAULT NULL, mainActor varchar(20) NOT NULL, publishingDate date NOT NULL,PRIMARY KEY (id), KEY 'title' (title) USING BTREE );";
-		String sqlCreateTableUserAccount = "CREATE TABLE useraccount ( id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;, username varchar(20) NOT NULL, email varchar(30) NOT NULL DEFAULT '', password varchar(20) NOT NULL DEFAULT '', age int(5) NOT NULL DEFAULT 20, PRIMARY KEY (id), KEY username (username) USING BTREE; ); ";
-		String sqlCreateTableRating = "CREATE TABLE ratings ( id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;, rating int(11) NOT NULL, uid varchar(20) NOT NULL, mid varchar(20) NOT NULL, comment varchar(255) DEFAULT NULL, PRIMARY KEY (id), KEY uid (uid) USING BTREE, KEY mid (mid) USING BTREE, CONSTRAINT fk_mid FOREIGN KEY (mid) REFERENCES movies (title), CONSTRAINT fk_uid FOREIGN KEY (uid) REFERENCES useraccount (username) );";
-		String sqlInsertMovie = "INSERT INTO movie (title,director,mainActor,publishingDate) VALUES (?,?,?,?,?)";
-		String sqlInsertUserAccount = "INSERT INTO useraccount (username,email,password,age) VALUES (?,?,?,?,?)";
-		String sqlInsertRating = "INSERT INTO movie (rating,comment) VALUES (?,?)";
-		
-		// Perform database updates
-				try (Connection connection = DriverManager
-						.getConnection(
-								"jdbc:" + Configuration.getType() + "://" + Configuration.getServer() + ":"
-										+ Configuration.getPort() + "/" + Configuration.getDatabase(),
-								Configuration.getUser(), Configuration.getPassword())) {
+		@Before
+		public void setUp() throws Exception {
+			
+			testM = new Movies("MusterMovie", "Mustermann", "MusterActor", Date.valueOf("2021-02-28") );
+			testUA = new UserAccount("moeed", "moeeddash", "moeed", 34);
+			Rating testR = new Rating("moeed","MusterMovie", 7, "Great Movie!");
+			ArrayList<Movies> testMovies = new ArrayList<Movies>();
+			testMovies.add(testM);
+			testM.setMovies(testMovies);
+			
+			
+			// SQL statements
+			String sqlCleanDB = "DROP TABLE IF EXISTS useraccount,movies,ratings;";
+			String sqlCreateTableUserAccount = "CREATE TABLE useraccount (   id int(11) NOT NULL AUTO_INCREMENT,   username varchar(20) NOT NULL,   email varchar(30) NOT NULL DEFAULT '',   password varchar(20) NOT NULL DEFAULT '',   age int(5) NOT NULL, PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+			String sqlCreateTableMovies = "CREATE TABLE movies (   id int(11) NOT NULL AUTO_INCREMENT,   title varchar(20) NOT NULL,   director varchar(20) DEFAULT NULL,   mainActor varchar(20) NOT NULL,   publishingDate date NOT NULL,   PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+			String sqlCreateTableRating = "CREATE TABLE ratings (   id int(11) NOT NULL AUTO_INCREMENT,   rating int(11) NOT NULL,   uid varchar(20) NOT NULL,   mid varchar(20) NOT NULL,   comment varchar(255) DEFAULT NULL, PRIMARY KEY (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+			String sqlInsertUserAccount = "INSERT INTO useraccount (username,email,password,age) VALUES (?,?,?,?)";
+			String sqlInsertMovie = "INSERT INTO movies (title,director,mainActor,publishingDate) VALUES (?,?,?,?)";
+			String sqlInsertRating = "INSERT INTO ratings (rating, uid, mid, comment) VALUES (?,?,?,?)";
+			
+			// Perform database updates
+					try (Connection connection = DriverManager
+							.getConnection(
+									"jdbc:" + Configuration.getType() + "://" + Configuration.getServer() + ":"
+											+ Configuration.getPort() + "/" + Configuration.getDatabase(),
+									Configuration.getUser(), Configuration.getPassword())) {
 
-					try (PreparedStatement psClean = connection.prepareStatement(sqlCleanDB)) {
-						psClean.executeUpdate();
+						try (PreparedStatement psClean = connection.prepareStatement(sqlCleanDB)) {
+							psClean.executeUpdate();
+						}
+						try (PreparedStatement psCreateUserAccount = connection.prepareStatement(sqlCreateTableUserAccount)) {
+							psCreateUserAccount.executeUpdate();
+						}
+						try (PreparedStatement psCreateMovie = connection.prepareStatement(sqlCreateTableMovies)) {
+							psCreateMovie.executeUpdate();
+						}
+						try (PreparedStatement psCreateRating = connection.prepareStatement(sqlCreateTableRating)) {
+							psCreateRating.executeUpdate();
+						}
+						try (PreparedStatement psInsertUserAccount = connection.prepareStatement(sqlInsertUserAccount)) {
+							psInsertUserAccount.setString(1, testUA.getUsername());
+							psInsertUserAccount.setString(2, testUA.getEmail());
+							psInsertUserAccount.setString(3, testUA.getPassword());
+							psInsertUserAccount.setInt(4, testUA.getAge());
+						}
+						try (PreparedStatement psInsertMovie = connection.prepareStatement(sqlInsertMovie)) {
+							psInsertMovie.setString(1, testM.getTitle());
+							psInsertMovie.setString(2, testM.getDirector());
+							psInsertMovie.setString(3, testM.getMainActor());
+							psInsertMovie.setDate(4, (Date) testM.getPublishingDate());
+						}
+						try (PreparedStatement psInsertRating = connection.prepareStatement(sqlInsertRating)) {
+							psInsertRating.setString(1, testR.getUid());
+							psInsertRating.setString(2, testR.getMid());
+							psInsertRating.setInt(3, testR.getRating());
+							psInsertRating.setString(4, testR.getComment());
+						}
+						
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-					try (PreparedStatement psCreateMovie = connection.prepareStatement(sqlCreateTableMovies)) {
-						psCreateMovie.executeUpdate();
-					}
-					try (PreparedStatement psCreateUserAccount = connection.prepareStatement(sqlCreateTableUserAccount)) {
-						psCreateUserAccount.executeUpdate();
-					}
-					try (PreparedStatement psCreateRating = connection.prepareStatement(sqlCreateTableRating)) {
-						psCreateRating.executeUpdate();
-					}
-					try (PreparedStatement psInsertUserAccount = connection.prepareStatement(sqlInsertUserAccount)) {
-						psInsertUserAccount.setString(1, testUA.getUsername());
-						psInsertUserAccount.setString(2, testUA.getEmail());
-						psInsertUserAccount.setString(3, testUA.getPassword());
-						psInsertUserAccount.setInt(4, testUA.getAge());
-					}
-					try (PreparedStatement psInsertMovie = connection.prepareStatement(sqlInsertUserAccount)) {
-						psInsertMovie.setString(1, testM.getTitle());
-						psInsertMovie.setString(2, testM.getDirector());
-						psInsertMovie.setString(3, testM.getMainActor());
-						psInsertMovie.setDate(4, (Date) testM.getPublishingDate());
-					}
-					try (PreparedStatement psInsertRating = connection.prepareStatement(sqlInsertRating)) {
-						psInsertRating.setInt(1, testM.getRating());
-						psInsertRating.setString(2, testM.getComment());
-					}
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-	}
+		}
 		
+	
+	 //===============================================================================================================================================
+                                                        //Create User Tests
+     //===============================================================================================================================================
+
 				
 
 	@Test
@@ -123,7 +134,7 @@ public class DBFacadeTest extends TestCase {
 		
 		boolean result = DBFacade.getInstance().createUser(username,  email,  password,  age);
 		
-		assertTrue(result==false);
+		assertFalse(result==false);
 		
 	}
 	
@@ -138,9 +149,15 @@ public class DBFacadeTest extends TestCase {
 		
 		boolean result = DBFacade.getInstance().createUser(username,  email,  password,  age);
 		
-		assertTrue(result==false);
+		assertFalse(result==false);
 		
 	}
+	
+	
+	 //===============================================================================================================================================
+                                             //Create Movie Tests
+     //===============================================================================================================================================
+ 
 	
 	
 	@Test
@@ -163,14 +180,14 @@ public class DBFacadeTest extends TestCase {
 	
     public final void testCreateMovieThatAlreadyExists() {
 		
-		String title="sherk";
+		String title="hobitt";
 		String director="john snow";
 		String mainActor="donkey";
 		Date publishingDate= new Date(2021-01-05);
 		
 		boolean result = DBFacade.getInstance().addingNewMoviesToDB(title,  director,  mainActor,  publishingDate);
 		
-		assertTrue(result==false);
+		assertFalse(result==false);
 		
 	}
     
@@ -186,7 +203,7 @@ public class DBFacadeTest extends TestCase {
 		
 		boolean result = DBFacade.getInstance().addingNewMoviesToDB(title,  director,  mainActor,  publishingDate);
 		
-		assertTrue(result==false);
+		assertFalse(result==false);
 		
 	}
     
@@ -204,8 +221,86 @@ public class DBFacadeTest extends TestCase {
 		assertTrue(result==false);
 		
 	}
-	
-	
+
+    
+    //===============================================================================================================================================
+                                         //Rate Movie Tests
+   //===============================================================================================================================================
+    
+  
+	//test to rate the movie which was successfully created
+    @Test
+    public final void testCreateRating() {
+		
+    	String username = "dummyman334";
+		String title="hobitt";
+    	int rating= 7;
+    	String comment="too long";
+		
+		
+		boolean result = DBFacade.getInstance().addingNewRatingToDB( username,  rating,  title,  comment);
+		
+		assertTrue(result==true);
+		
+	}
+    
+    
+  //test to rate the movie again, duplicate rating 
+    @Test
+    public final void testCreateRatingDuplicate() {
+		
+    	String username = "dummyman334";
+		String title="hobitt";
+    	int rating= 8;
+    	String comment="too long!!";
+		
+		
+		boolean result = DBFacade.getInstance().addingNewRatingToDB( username,  rating,  title,  comment);
+		
+		assertFalse(result==false);
+		
+	}
+     
+    
+    
+  //test to rate the movie out of the range 1-10
+    @Test
+    public final void testCreateRatingRange() {
+		
+    	String username = "dummyman334";
+		String title="hobitt";
+    	int rating= 35;
+    	String comment="too long";
+		
+		
+		boolean result = DBFacade.getInstance().addingNewRatingToDB( username,  rating,  title,  comment);
+		
+		assertFalse(result==false);
+		
+	}
+    
+    //===============================================================================================================================================
+                                               //Show Movie Tests
+   //===============================================================================================================================================
+    
+    
+    @Test
+	public void testGetMoviesInDB() {
+
+		ArrayList<Movies> m = DBFacade.getInstance().getMoviesInDB();
+
+		// Verify return values
+		//assertTrue(m.size() >= 1);
+		assertTrue(m.get(0).getTitle() == testM.getTitle());
+		assertTrue(m.get(0).getPublishingDate() == testM.getPublishingDate());
+		assertTrue(m.get(0).getMainActor() == testM.getMainActor());
+		assertTrue(m.get(0).getDirector() == testM.getDirector());
+		assertTrue(m.get(0).getAvgRating() == testM.getAvgRating());
+
+	}
+    
+    
+    
 	
 	
 	@After

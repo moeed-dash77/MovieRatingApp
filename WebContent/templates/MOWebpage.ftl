@@ -18,8 +18,8 @@
 	<div id="logo">Movie Rating App<br>Software Engineering </div>
     <ul id="navigation">
     	<li><a href="index" title="Index">View Homesite</a></li>
-		<li><a href="MOWebpage?action=selectAddMovieForm&username=${username}" title="AddNewMovie">Add Movie</a></li>
-		<li><a href="MOWebpage?action=showAllMoviesInDB&username=${username}" title="MoviesInDatabase">Show all Movies</a></li>
-		<li><a href="defaultWebpageUser?action=selectRegisterForm" title="Register">Register</a></li>
+		<li><a href="MOWebpage?action=selectAddMovieForm&username=${username}" title="AddNewMovie" id= "AddMovie">Add Movie</a></li>
+		<li><a href="MOWebpage?action=showAllMoviesInDB&username=${username}" title="MoviesInDatabase" id="ShowMovies">Show all Movies</a></li>
+		<li><a href="defaultWebpageUser?action=selectRegisterForm" title="Register" id= "Resgister">Register</a></li>
     </ul>
 	<div id="content">

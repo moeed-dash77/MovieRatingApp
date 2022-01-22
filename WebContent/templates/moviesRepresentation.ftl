@@ -18,7 +18,7 @@
 		<td>${m.director}</td>
 		<td>${m.mainActor}</td>
 		<td>${m.avgRating}</td>
-		<td><a href="MOWebpage?action=selectRateMoviesForm&username=${username}&movieTitle=${m.title}">Rate This Movie</a></td>
+		<td><a href="MOWebpage?action=selectRateMoviesForm&username=${username}&movieTitle=${m.title}" id=${m.title}>Rate This Movie</a></td>
 	</tr>
 	</#list>
 </table>
