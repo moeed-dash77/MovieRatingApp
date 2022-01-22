@@ -53,9 +53,9 @@ public class UserGuiTest {
 			
 	//change here while retesting	 
 		// Submit the form with given parameters
-			tester.setTextField("username", "comustersdumm222");
-			tester.setTextField("email", "cmusterss2umm@gummy.de");
-			tester.setTextField("password", "testPs");
+			tester.setTextField("username", "grupe4team");
+			tester.setTextField("email", "grupe4team@gummy.de");
+			tester.setTextField("password", "grupe4tea");
 			tester.setTextField("age", "27");
 			
 			tester.clickButton("SelectHOWebpage");
@@ -87,7 +87,7 @@ public class UserGuiTest {
 			//set false info where same username used.
 				tester.clickLinkWithText("Try Again!");
 	//change here			
-				tester.setTextField("username", "comustersdumm222");
+				tester.setTextField("username", "grupe4team");
 				tester.setTextField("email", "test@inf.de");
 				tester.setTextField("password", "testF");
 				tester.setTextField("age", "21");
@@ -108,7 +108,7 @@ public class UserGuiTest {
 //change here while retesting
 				tester.clickLinkWithExactText("Register");
 				
-				tester.setTextField("username", "musters");
+				tester.setTextField("username", "grupestst");
 				tester.setTextField("email", "musters@info.de");
 				tester.setTextField("password", "testtocreate");
 				tester.setTextField("age", "22");
@@ -122,14 +122,14 @@ public class UserGuiTest {
 				
 	//change here while retesting	
 				
-				tester.gotoPage("http://localhost:8080/MovieRatingApp/MOWebpage?username=musters");
+				tester.gotoPage("http://localhost:8080/MovieRatingApp/MOWebpage?username=grupestst");
 			
 	
 	// click on add movie to get the create movie form
 				
 				tester.clickLinkWithExactText("Add Movie");
 				
-				tester.gotoPage("http://localhost:8080/MovieRatingApp/MOWebpage?action=selectAddMovieForm&username=musters");
+				tester.gotoPage("http://localhost:8080/MovieRatingApp/MOWebpage?action=selectAddMovieForm&username=grupestst");
 				
 				
 				
@@ -150,9 +150,9 @@ public class UserGuiTest {
 				
 				//submitt the form with given parameter
 	//change here			
-				tester.setTextField("title", "bros4life");
-				tester.setTextField("director", "ashfak");
-				tester.setTextField("mainActor", "nazeer");
+				tester.setTextField("title", "jamesfe");
+				tester.setTextField("director", "ashdfdfak");
+				tester.setTextField("mainActor", "nazessser");
 				tester.setTextField("publishingDate", "06/23/2016");
 				
 				tester.clickButton("SelectHOWebpage");
@@ -180,7 +180,7 @@ public class UserGuiTest {
 				//fail cases 2) movie already exists in Db, i.e title is same as before
 				tester.clickLinkWithExactText("Add Movie");
 				
-				tester.setTextField("title", "bros4life");
+				tester.setTextField("title", "jamesfe");
 				tester.setTextField("director", "ashfak");
 				tester.setTextField("mainActor", "nazeer");
 				tester.setTextField("publishingDate", "06/23/2019");
