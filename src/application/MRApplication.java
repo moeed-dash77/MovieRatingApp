@@ -162,6 +162,9 @@ public class MRApplication implements UserCmds{
 		}
 		return result;
 	}
+	
+	
+	
 	private boolean movieAlreadyExists(String title) {
 		return DBFacade.getInstance().checkMovieAlreadyExists(title);
 	}

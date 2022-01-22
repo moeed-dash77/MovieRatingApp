@@ -7,22 +7,22 @@
 		<legend>Required Information</legend>
 		<div>
 			<label>Movie Title</label>
-			<input type="text" name="title" >
+			<input type="text" name="title" required>
 	    </div>
 
 		<div>
 			<label>Director</label>
-			<input type="text" name="director">
+			<input type="text" name="director" required>
 	    </div>
 	    
 	    <div>
 			<label>Main Actor</label>
-			<input type="text" name="mainActor">
+			<input type="text" name="mainActor" required>
 	    </div>
 	    
 	    <div>
 			<label>Publishing Date</label>
-			<input type="text" name="publishingDate" id="datepicker">
+			<input type="text" name="publishingDate" id="datepicker" required>
 	    </div>
 	</fieldset>
 	<button type="submit" id="SelectHOWebpage" name="MOWebpage" value="Submit">Submit!</button>

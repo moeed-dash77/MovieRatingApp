@@ -22,8 +22,8 @@ public class Movies {
 	private String director;
 	private String mainActor;
 	private Date publishingDate;
-	//private int rating;
-	//private String comment;
+	private int rating;
+	private String comment;
 	private int avgRating;
 	public int getAvgRating() {
 		return avgRating;
@@ -112,6 +112,22 @@ public class Movies {
 	}
 	public void setMovies(ArrayList<Movies> movies) {
 		this.movies = movies;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 	
